@@ -1,29 +1,31 @@
 <template>
-    <!-- <div class="parent">
-        <div class="child" v-for="(item, index) in a" :key="index"></div>
-    </div> -->
-    <!-- <prForm :schema="schema" :model="obj"></prForm> -->
-    <el-input v-model="test" placeholder="Please input" />
-    <test :schema="schema"> </test>
-
-    <el-select @change="testName">
-        <el-option label="item.label" value="item.value" />
-    </el-select>
+    <test :schema="schema" ref="elform" :model="obj" :rules="rules"> </test>
+    <button @click="validate">validate</button>
+    <el-form
+        ref="ruleFormRef"
+        :model="obj"
+        :rules="rules"
+        label-width="120px"
+        class="demo-ruleForm"
+        @validate="eventValidate"
+    >
+        <el-form-item label="Activity name" prop="name">
+            <el-input v-model="obj.name" />
+        </el-form-item>
+    </el-form>
+    <testForm :schema="schema" :model="obj" :rules="rules"></testForm>
 </template>
 <script>
-// import prForm from "../components/prForm.ts";
 import test from "../components/test.ts";
-// import { h } from "vue";
-// import { ElInput } from "element-plus";
-// const el = h(ElInput, { model: 1, value: 1 });
+import testForm from "../components/testForm.ts";
+import { onMounted, ref, reactive, watch, getCurrentInstance } from "vue";
 export default {
     components: {
-        // prForm,
         test,
+        testForm,
     },
     setup() {
-        const a = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
-        const schema = [
+        const schema = reactive([
             {
                 label: "待分配角色:",
                 name: "name",
@@ -58,18 +60,47 @@ export default {
                 span: 6,
                 labelWidth: "80px",
             },
-        ];
-        const obj = {};
-        const test = 0;
-        function testName() {
-            console.log("----cahnge--------");
+        ]);
+        const elform = ref(null);
+        const ruleFormRef = ref(null);
+        const rules = {
+            name: [
+                {
+                    required: true,
+                    message: "age is required",
+                    trigger: "blur",
+                },
+            ],
+        };
+        let instance = getCurrentInstance();
+        watch(
+            () => [...schema],
+            () => {
+                // console.log("-----update-------");
+                instance.ctx.$forceUpdate();
+            }
+        );
+        const obj = reactive({});
+        function testName(a) {
+            console.log(a, "----change--------");
+        }
+        function validate() {
+            schema.pop();
+            schema[0].label = Date.now();
+        }
+
+        function eventValidate() {
+            // debugger;
         }
         return {
-            a,
             schema,
             obj,
-            test,
             testName,
+            elform,
+            validate,
+            rules,
+            ruleFormRef,
+            eventValidate,
         };
     },
 };

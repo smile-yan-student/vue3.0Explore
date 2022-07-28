@@ -1,4 +1,15 @@
-import { h, onMounted, defineComponent, defineProps,reactive } from "vue";
+import {
+    h,
+    onMounted,
+    defineComponent,
+    defineProps,
+    reactive,
+    ref,
+    toRefs,
+    toRef,
+    isProxy,
+    watch,
+} from "vue";
 import {
     ElInput,
     ElCheckbox,
@@ -6,43 +17,74 @@ import {
     ElSelect,
     ElOption,
     ElForm,
+    ElFormItem,
 } from "element-plus";
-function createItem(schema: any = []) {
-    const a: any = [];
-
-    schema.forEach((item: any, index: any) => {
-        a.push(h("p", [index]));
+/* eslint-disable */
+// @ts-nocheck
+function createItem(item: any, index: any, model: any) {
+    return h(ElInput, {
+        key: index,
+        modelValue: model[item.name],
+        onInput(val: any) {
+            model[item.name] = val;
+        },
     });
-    return a;
+}
+function createFormItem(schema: any = [], model: any) {
+    const slot: any = [];
+    schema.forEach((item: any, index: any) => {
+        const el = h(ElInput, {
+            key: index,
+            modelValue: model[item.name],
+            onInput(val: any) {
+                model[item.name] = val;
+            },
+        });
+        // const el = createItem(item, index, model);
+
+        const itemEl = h(
+            ElFormItem,
+            {
+                prop: item.name,
+                label: item.label,
+            },
+            () => [el]
+        );
+        slot.push(itemEl);
+    });
+    return slot;
 }
 
 export default {
-    setup(props:any,context:any) {
-        // const test = defineProps({
-        //     schema: {
-        //         type: Array,
-        //         default: () => [],
-        //     },
-        //     model: {
-        //         type: Object,
-        //         default: () => ({}),
-        //     },
-        // });
-console.log(props.schema,context,'-------props-----');
-        // const slot = createItem(props.schema);
-        return h(ElForm, );
-    },
-    props:{
-         schema: {
-                type: Array,
-                default: () => [],
+    render(): any {
+        // @ts-ignore
+        const { schema, model, rules } = this;
+        const slot = createFormItem(schema, model);
+        return h(
+            ElForm,
+            {
+                model: model,
+                rules: rules,
+                ref: "elForm",
+                inline: true,
             },
-            model: {
-                type: Object,
-                default: () => ({}),
-            },
+            () => slot
+        );
     },
-    slots:
-        createItem()
-    
+    props: {
+        schema: {
+            type: Array,
+            default: () => {
+                return [];
+            },
+        },
+        model: {
+            type: Object,
+            default: () => ({}),
+        },
+        rules: {
+            type: Object,
+            default: () => ({}),
+        },
+    },
 };
