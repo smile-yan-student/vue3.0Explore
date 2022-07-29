@@ -1,8 +1,7 @@
 <template>
-    <test :schema="schema" ref="elform" :model="obj" :rules="rules"> </test>
+    <!-- <test :schema="schema" ref="elform" :model="obj" :rules="rules"> </test>
     <button @click="validate">validate</button>
     <el-form
-        ref="ruleFormRef"
         :model="obj"
         :rules="rules"
         label-width="120px"
@@ -12,52 +11,146 @@
         <el-form-item label="Activity name" prop="name">
             <el-input v-model="obj.name" />
         </el-form-item>
-    </el-form>
-    <testForm :schema="schema" :model="obj" :rules="rules"></testForm>
+    </el-form> -->
+    <el-date-picker v-model="obj.dated" type="date" placeholder="Pick a day" />
+    <testForm
+        ref="ruleFormRef"
+        :schema="schema"
+        :model="obj"
+        :rules="rules"
+        a="1"
+        @validate="eventValidate"
+    >
+        <template #button> 我是button插槽 </template>
+        <template #render="a">{{ a }} 我是插槽 </template>
+    </testForm>
 </template>
 <script>
 import test from "../components/test.ts";
 import testForm from "../components/testForm.ts";
 import { onMounted, ref, reactive, watch, getCurrentInstance } from "vue";
+
 export default {
     components: {
-        test,
         testForm,
     },
+
     setup() {
         const schema = reactive([
             {
                 label: "待分配角色:",
                 name: "name",
-                comp: "el-input",
+                type: "input",
                 props: {
                     placeholder: "请输入待分配角色",
                     disabled: true,
                 },
 
-                span: 6,
-                labelWidth: "90px",
+                span: 8,
+                labelWidth: "100px",
+            },
+            {
+                label: "待分配角色:",
+                name: "dated",
+                type: "date",
+                props: {
+                    placeholder: "请输入待分配角色",
+                },
+
+                span: 8,
+                labelWidth: "100px",
+            },
+            {
+                label: "待分配角色:",
+                name: "number",
+                type: "number",
+                props: {
+                    placeholder: "请输入待分配角色",
+                },
+
+                span: 8,
+                labelWidth: "100px",
+            },
+            {
+                name: "check",
+                type: "checkbox",
+                props: {
+                    placeholder: "请输入待分配角色",
+                    label: "lll",
+                },
+
+                span: 8,
+                labelWidth: "100px",
             },
             {
                 label: "帐户名称:",
                 name: "username",
-                comp: "el-input",
+                type: "select",
                 props: {
                     placeholder: "请输入帐户名称",
+                    clearable: true,
+                    options: [
+                        {
+                            label: "l",
+                            value: 0,
+                        },
+                    ],
                 },
 
-                span: 6,
+                span: 8,
                 labelWidth: "80px",
             },
             {
                 label: "用户姓名:",
                 name: "nickname",
-                comp: "el-input",
+                type: "input",
                 props: {
                     placeholder: "请输入用户姓名",
                 },
 
-                span: 6,
+                span: 8,
+                labelWidth: "80px",
+            },
+            {
+                label: "用户姓名:",
+                name: "render",
+                type: "custom",
+                props: {
+                    placeholder: "请输入用户姓名",
+                },
+
+                span: 8,
+                labelWidth: "80px",
+            },
+            {
+                label: "用户姓名:",
+                name: "render",
+                type: "cascader",
+                props: {
+                    placeholder: "请输入用户姓名",
+                    options: [
+                        {
+                            value: "resource",
+                            label: "Resource",
+                            children: [
+                                {
+                                    value: "axure",
+                                    label: "Axure Components",
+                                },
+                                {
+                                    value: "sketch",
+                                    label: "Sketch Templates",
+                                },
+                                {
+                                    value: "docs",
+                                    label: "Design Documentation",
+                                },
+                            ],
+                        },
+                    ],
+                },
+
+                span: 8,
                 labelWidth: "80px",
             },
         ]);
@@ -80,17 +173,19 @@ export default {
                 instance.ctx.$forceUpdate();
             }
         );
-        const obj = reactive({});
+        const obj = reactive({ dated: [] });
         function testName(a) {
             console.log(a, "----change--------");
         }
         function validate() {
-            schema.pop();
-            schema[0].label = Date.now();
+            // schema.pop();\
+            ruleFormRef.value.$refs.elForm.validate();
+            // schema[0].label = Date.now();
         }
 
         function eventValidate() {
             // debugger;
+            console.log("------va------");
         }
         return {
             schema,
