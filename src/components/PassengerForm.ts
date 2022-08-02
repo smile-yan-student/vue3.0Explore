@@ -1,16 +1,4 @@
-import {
-    h,
-    onMounted,
-    defineComponent,
-    defineProps,
-    reactive,
-    ref,
-    toRefs,
-    toRef,
-    isProxy,
-    watch,
-    getCurrentInstance,
-} from "vue";
+import { h, toRefs, watch, getCurrentInstance } from "vue";
 import {
     ElInput,
     ElCheckbox,
@@ -23,25 +11,49 @@ import {
     ElCol,
     ElInputNumber,
     ElDatePicker,
-    dateEquals,
+    ElTimePicker,
+    ElTimeSelect,
+    ElRadio,
+    ElRadioGroup,
+    ElCheckboxGroup,
 } from "element-plus";
-interface Dict {
-    [type: string]: HTMLElement;
-}
 const dict = {
-    input: ElInput,
-    select: ElSelect,
-    cascader: ElCascader,
-    number: ElInputNumber,
-    checkbox: ElCheckbox,
-    date: ElDatePicker,
+    "el-input": ElInput,
+    "el-select": ElSelect,
+    "el-cascader": ElCascader,
+    "el-input-number": ElInputNumber,
+    "el-checkbox": ElCheckbox,
+    "el-date-picker": ElDatePicker,
+    "el-time-picker": ElTimePicker,
+    "el-time-select": ElTimeSelect,
+    "el-radio": ElRadio,
+    "el-radio-group": ElRadioGroup,
+    "el-checkbox-group": ElCheckboxGroup,
+    "el-option": ElOption,
 };
+
 /* eslint-disable */
 function createItem(item: any, index: any, model: any) {
-    if (item.type == "select") {
+    let component: Array<string>;
+    let type = item.type;
+    switch (type) {
+        case "el-checkbox-group":
+            component = ["el-checkbox-group", "el-checkbox"];
+            break;
+        case "el-radio-group":
+            component = ["el-radio-group", "el-radio"];
+            break;
+        case "el-select":
+            component = ["el-select", "el-option"];
+            break;
+        default:
+            component = [type];
+    }
+    if (component.length > 1) {
         let slots: any = [];
         item.props.options.forEach((item: any, index: any) => {
-            let slot = h(ElOption, {
+            // @ts-ignore
+            let slot = h(dict[component[1]], {
                 key: index,
                 label: item.label,
                 value: item.value,
@@ -55,12 +67,8 @@ function createItem(item: any, index: any, model: any) {
                 {
                     key: index,
                     modelValue: model[item.name],
-                    onChange(val: any) {
-                        model[item.name] = val;
-                    },
-                    ...item?.props,
                     "onUpdate:modelValue"(val: any) {
-                        console.log(val, "------------");
+                        model[item.name] = val;
                     },
                 },
                 () => slots
@@ -69,25 +77,17 @@ function createItem(item: any, index: any, model: any) {
         return () =>
             h(
                 // @ts-ignore
-                dict[item.type],
+                dict[component[0]],
                 {
                     key: index,
                     modelValue: model[item.name],
-                    value: model[item.name],
-                    onInput(val: any) {
-                        console.log(val, "------input------");
-                        // typeof val == "object" || (model[item.name] = val);
-                        model[item.name] = val;
-                    },
-                    onChange(val: any) {
-                        console.log(val, "-------cahneg-----");
-                        model[item.name] = val;
-                    },
                     "onUpdate:modelValue"(val: any) {
                         model[item.name] = val;
-                        console.log(val, "------------");
                     },
                     ...item?.props,
+                    props: {
+                        expandTrigger: "click",
+                    },
                 }
             );
     }
@@ -102,30 +102,28 @@ function createFormItem(
     const slot: any = [];
     schema.forEach((item: any, index: any) => {
         const el = createItem(item, index, model);
-
-        const elFormItemElement = () =>
-            h(
-                ElFormItem,
-                {
-                    prop: item.name,
-                    label: item.label,
-                    ...item,
-                },
-                el
-            );
+        const elFormItemElement = h(
+            ElFormItem,
+            {
+                prop: item.name,
+                label: item.label,
+                ...item,
+            },
+            el
+        );
         const itemCol = h(
             ElCol,
             { span: inline ? item.span || 8 : 24 },
             item.type == "custom"
-                ? ctx.slots[item.name] && ctx.slots[item.name]()
-                : elFormItemElement
+                ? () => ctx.slots[item.name] && ctx.slots[item.name]()
+                : () => elFormItemElement
         );
         slot.push(itemCol);
     });
     return slot;
 }
 
-export default {
+const PassengerForm = {
     setup(props: any, ctx: any): any {
         const { model, rules, schema, gutter, justify, align, tag, inline } =
             toRefs(props);
@@ -169,7 +167,10 @@ export default {
                             align: align.value,
                             tag: tag.value,
                         },
-                        () => [slots, ctx.slots?.button && ctx.slots?.button()]
+                        () => [
+                            ...slots,
+                            ctx.slots?.button && ctx.slots?.button(),
+                        ]
                     )
             );
     },
@@ -212,3 +213,5 @@ export default {
         },
     },
 };
+export default PassengerForm;
+export { PassengerForm };

@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
 const router = useRouter();
-router.push("/test");
+// router.push("/test");
 </script>
 <style>
 #app {
