@@ -19,7 +19,8 @@ export default defineComponent({
 </script>
 <style scoped>
 .el-menu_Passenger {
-  width: 250px;
+  width: 200px;
   height: 100%;
+  border-right: 1px solid rgb(232, 228, 250);
 }
 </style>

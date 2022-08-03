@@ -8,6 +8,9 @@
             <el-main>
                 <router-view />
             </el-main>
+            <el-footer>
+                <i class="iconfont icon-police_officer_male"></i>
+            </el-footer>
         </el-container>
     </el-container>
 </template>
@@ -23,7 +26,6 @@ export default {
     setup() {
         let title = ref("");
         axios.get("/title").then((res) => {
-            console.log(res.data.data.title, "------res------");
             title.value = res.data.data.title;
         });
 
