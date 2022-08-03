@@ -4,7 +4,7 @@
             <sider-bar />
         </el-aside>
         <el-container>
-            <el-header>山不让尘，川不辞盈</el-header>
+            <el-header>{{ title }}</el-header>
             <el-main>
                 <router-view />
             </el-main>
@@ -14,9 +14,31 @@
 
 <script>
 import SiderBar from "./SiderBar.vue";
+import axios from "../api/index";
+import { ref } from "vue";
 export default {
     components: {
         SiderBar,
+    },
+    setup() {
+        let title = ref("");
+        axios.get("/title").then((res) => {
+            console.log(res.data.data.title, "------res------");
+            title.value = res.data.data.title;
+        });
+
+        // axios
+        //     .get("/updatetitle", {
+        //         params: {
+        //             title: "Never say Never!",
+        //         },
+        //     })
+        //     .then((res) => {
+        //         console.log(res, "------------");
+        //     });
+        return {
+            title,
+        };
     },
 };
 </script>
