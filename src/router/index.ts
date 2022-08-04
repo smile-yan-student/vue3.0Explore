@@ -17,9 +17,7 @@ const routes: Array<RouteRecordRaw> = [
                 // this generates a separate chunk (about.[hash].js) for this route
                 // which is lazy-loaded when the route is visited.
                 component: () =>
-                    import(
-                        /* webpackChunkName: "about" */ "../views/PassengerForm.vue"
-                    ),
+                    import(/* webpackChunkName: "about" */ "../views/form.vue"),
             },
             {
                 path: "/home",
@@ -28,8 +26,17 @@ const routes: Array<RouteRecordRaw> = [
                 // this generates a separate chunk (about.[hash].js) for this route
                 // which is lazy-loaded when the route is visited.
                 component: () =>
+                    import(/* webpackChunkName: "about" */ "../views/home.vue"),
+            },
+            {
+                path: "/scaner",
+                name: "Scaner",
+                // route level code-splitting
+                // this generates a separate chunk (about.[hash].js) for this route
+                // which is lazy-loaded when the route is visited.
+                component: () =>
                     import(
-                        /* webpackChunkName: "about" */ "../views/PassengerTitle.vue"
+                        /* webpackChunkName: "about" */ "../components/scaner.vue"
                     ),
             },
         ],

@@ -6,6 +6,9 @@
         <el-menu-item index="/test">
             <template #title>Test</template>
         </el-menu-item>
+        <el-menu-item index="/scaner">
+            <template #title>Scaner</template>
+        </el-menu-item>
     </el-menu>
 </template>
 
