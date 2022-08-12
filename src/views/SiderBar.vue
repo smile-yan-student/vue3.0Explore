@@ -9,6 +9,9 @@
         <el-menu-item index="/scaner">
             <template #title>Scaner</template>
         </el-menu-item>
+        <el-menu-item index="/charts">
+            <template #title>Charts</template>
+        </el-menu-item>
     </el-menu>
 </template>
 
